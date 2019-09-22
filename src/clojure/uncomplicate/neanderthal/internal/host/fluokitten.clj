@@ -442,44 +442,49 @@
 
 ;; ============================ Primitive function extensions ==================
 
-(extend-type IFn
+(defmacro with-fn-check [this body]
+  `(if (instance? IFn ~this)
+     ~body
+     (dragan-says-ex "The first parameter must be a function.")))
+
+(extend-type Object
   ReductionFunction
   (vector-reduce
     ([this init x]
-     (vector-reduce* RealVector double double this init x))
+     (with-fn-check this (vector-reduce* RealVector double double this init x)))
     ([this init x y]
-     (vector-reduce* RealVector double double this init x y))
+     (with-fn-check this (vector-reduce* RealVector double double this init x y)))
     ([this init x y z]
-     (vector-reduce* RealVector double double this init x y z))
+     (with-fn-check this (vector-reduce* RealVector double double this init x y z)))
     ([this init x y z v]
-     (vector-reduce* RealVector double double this init x y z v)))
+     (with-fn-check this (vector-reduce* RealVector double double this init x y z v))))
   (vector-map-reduce
     ([this init g x]
-     (vector-map-reduce* RealVector double double this init g x))
+     (with-fn-check this (vector-map-reduce* RealVector double double this init g x)))
     ([this init g x y]
-     (vector-map-reduce* RealVector double double this init g x y))
+     (with-fn-check this (vector-map-reduce* RealVector double double this init g x y)))
     ([this init g x y z]
-     (vector-map-reduce* RealVector double double this init g x y z))
+     (with-fn-check this (vector-map-reduce* RealVector double double this init g x y z)))
     ([this init g x y z v]
-     (vector-map-reduce* RealVector double double this init g x y z v)))
+     (with-fn-check this (vector-map-reduce* RealVector double double this init g x y z v))))
   (matrix-reduce
     ([this init a]
-     (matrix-reduce* double this init a))
+     (with-fn-check this (matrix-reduce* double this init a)))
     ([this init a b]
-     (matrix-reduce* double this init a b))
+     (with-fn-check this (matrix-reduce* double this init a b)))
     ([this init a b c]
-     (matrix-reduce* double this init a b c))
+     (with-fn-check this (matrix-reduce* double this init a b c)))
     ([this init a b c d]
-     (matrix-reduce* double this init a b c d)))
+     (with-fn-check this (matrix-reduce* double this init a b c d))))
   (matrix-map-reduce
     ([this init g a]
-     (matrix-map-reduce* double this init g a))
+     (with-fn-check this (matrix-map-reduce* double this init g a)))
     ([this init g a b]
-     (matrix-map-reduce* double this init g a b))
+     (with-fn-check this (matrix-map-reduce* double this init g a b)))
     ([this init g a b c]
-     (matrix-map-reduce* double this init g a b c))
+     (with-fn-check this (matrix-map-reduce* double this init g a b c)))
     ([this init g a b c d]
-     (matrix-map-reduce* double this init g a b c d))))
+     (with-fn-check this (matrix-map-reduce* double this init g a b c d)))))
 
 (extend-type IFn$ODO
   ReductionFunction
