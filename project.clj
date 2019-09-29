@@ -21,7 +21,8 @@
                  [org.jocl/jocl-blast "1.5.0"]
                  [uncomplicate/clojurecuda "0.8.0"]
                  [org.jcuda/jcublas "10.1.0"]
-                 [org.apache.commons/commons-math3 "3.6.1"]]
+                 [org.apache.commons/commons-math3 "3.6.1"]
+                 [com.taoensso/nippy "2.15.0-RC1"]]
 
   :codox {:metadata {:doc/format :markdown}
           :src-dir-uri "http://github.com/uncomplicate/neanderthal/blob/master/"
