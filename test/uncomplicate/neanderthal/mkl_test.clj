@@ -13,7 +13,8 @@
              [block-test :as block-test]
              [real-test :as real-test]
              [math-test :as math-test]
-             [random-test :as random-test]]
+             [random-test :as random-test]
+             [serialization-test :as serialization-test]]
             [uncomplicate.neanderthal.internal.host.mkl :refer [mkl-float mkl-double mkl-int mkl-long]]))
 
 (facts "factory-by-type test"
@@ -100,3 +101,48 @@
 (random-test/test-all mkl-float)
 (random-test/test-all-host mkl-double)
 (random-test/test-all-host mkl-float)
+
+(serialization-test/vector-round-trip-test mkl-int)
+(serialization-test/vector-round-trip-test mkl-long)
+(serialization-test/vector-round-trip-test mkl-float)
+(serialization-test/vector-round-trip-test mkl-double)
+(serialization-test/subvector-round-trip-test mkl-int)
+(serialization-test/subvector-round-trip-test mkl-long)
+(serialization-test/subvector-round-trip-test mkl-float)
+(serialization-test/subvector-round-trip-test mkl-double)
+
+(serialization-test/ge-round-trip-test mkl-double)
+(serialization-test/ge-round-trip-test mkl-float)
+(serialization-test/submatrix-ge-round-trip-test mkl-double)
+(serialization-test/submatrix-ge-round-trip-test mkl-float)
+
+(serialization-test/tr-round-trip-test mkl-double)
+(serialization-test/tr-round-trip-test mkl-float)
+(serialization-test/sy-round-trip-test mkl-double)
+(serialization-test/sy-round-trip-test mkl-float)
+
+; TODO -fix gb/sb/tb and try to save submatrices
+(serialization-test/gb-round-trip-test mkl-double)
+(serialization-test/gb-round-trip-test mkl-float)
+;(serialization-test/submatrix-gb-round-trip-test mkl-double)
+;(serialization-test/submatrix-gb-round-trip-test mkl-float)
+
+(serialization-test/sb-round-trip-test mkl-double)
+(serialization-test/sb-round-trip-test mkl-float)
+(serialization-test/tb-round-trip-test mkl-double)
+(serialization-test/tb-round-trip-test mkl-float)
+; TODO - end of banded
+
+; TODO - packed and triangular cannot have submatrices
+(serialization-test/tp-round-trip-test mkl-double)
+(serialization-test/tp-round-trip-test mkl-float)
+(serialization-test/sp-round-trip-test mkl-double)
+(serialization-test/sp-round-trip-test mkl-float)
+(serialization-test/gd-round-trip-test mkl-double)
+(serialization-test/gd-round-trip-test mkl-float)
+(serialization-test/gt-round-trip-test mkl-double)
+(serialization-test/gt-round-trip-test mkl-float)
+(serialization-test/dt-round-trip-test mkl-double)
+(serialization-test/dt-round-trip-test mkl-float)
+(serialization-test/st-round-trip-test mkl-double)
+(serialization-test/st-round-trip-test mkl-float)
