@@ -95,3 +95,12 @@
 (random-test/test-all mkl-float)
 (random-test/test-all-host mkl-double)
 (random-test/test-all-host mkl-float)
+
+(defn gb-corruption-test [factory]
+  (uncomplicate.commons.core/with-release
+    [source-vctr (uncomplicate.neanderthal.core/vctr factory (range 1 10000))]
+    (dotimes [_ 100000]
+      (uncomplicate.commons.core/with-release
+        [_ (uncomplicate.neanderthal.core/gb factory 2 2 0 0 source-vctr)]))))
+
+(gb-corruption-test mkl-double)                             ; should SEGFAULT
