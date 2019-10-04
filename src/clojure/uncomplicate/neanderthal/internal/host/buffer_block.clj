@@ -1294,6 +1294,22 @@
   Magma
   {:op (constantly matrix-op)})
 
+(defn engine-by-matrix-type [factory matrix-type]
+  (case matrix-type
+    :sy (sy-engine factory)
+    :tr (tr-engine factory)
+    :gb (gb-engine factory)
+    :sb (sb-engine factory)
+    :tb (tb-engine factory)
+    :sp (sp-engine factory)
+    :tp (tp-engine factory)
+    :gt (gt-engine factory)
+    :gd (gd-engine factory)
+    :dt (dt-engine factory)
+    :st (st-engine factory)
+    (dragan-says-ex (format "%s is not a valid matrix type. Please send me a bug report." matrix-type)
+                    {:type matrix-type})))
+
 (defn real-uplo-matrix
   ([fact master buf n ofst nav stor reg matrix-type default engine]
    (->RealUploMatrix nav stor reg default fact (data-accessor fact) engine matrix-type
@@ -1304,9 +1320,8 @@
   ([fact n column? lower? diag-unit? matrix-type]
    (real-uplo-matrix fact n (layout-navigator column?) (full-storage column? n n)
                      (band-region n lower? diag-unit?) matrix-type (real-default matrix-type diag-unit?)
-                     (case matrix-type
-                       :tr (tr-engine fact)
-                       :sy (sy-engine fact)
+                     (if (matrix-type #{:tr :sy})
+                       (engine-by-matrix-type fact matrix-type)
                        (dragan-says-ex (format "%s is not a valid UPLO matrix type. Please send me a bug report."
                                                matrix-type)
                                        {:type matrix-type}))))
@@ -2201,11 +2216,8 @@
          ku (if (= :gd matrix-type) 0 1)]
      (real-diagonal-matrix fact n diagonal-navigator (diagonal-storage n matrix-type)
                            (band-region n n kl ku) matrix-type (real-default matrix-type)
-                           (case matrix-type
-                             :gd (gd-engine fact)
-                             :gt (gt-engine fact)
-                             :dt (dt-engine fact)
-                             :st (st-engine fact)
+                           (if (matrix-type #{:gd :gt :dt :st})
+                             (engine-by-matrix-type fact matrix-type)
                              (dragan-says-ex (format "%s is not a valid (tri)diagonal matrix type."
                                                      matrix-type)))))))
 
