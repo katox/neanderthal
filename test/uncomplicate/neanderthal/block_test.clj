@@ -450,6 +450,17 @@
            (fmap-keeps-type pinc (creator factory 1 9 [1 2 3 4 5 6 100 0 -999]))
            (fmap-keeps-type p+ (creator factory 0 0) (ge factory 0 0)))))
 
+(defn test-gb-functor-laws [factory]
+  (let [pinc (double-fn (partial + 1))
+        p*100 (double-fn (partial * 100))
+        p+ (double-fn +)]
+    (facts "Monadic laws for GE matrices."
+           (functor-law2 pinc p*100 (gb factory 3 2 1 1 [1 -199 9 7 8 19 1 2 3 4 5 6 7 8 9 10]))
+           (functor-law2 pinc p*100 (gb factory 2 3 1 1 [1 -199 9 8 -7 -1 1 2 3 4 5 6 7 8 9 10])
+                         (gb factory 2 3 1 1 [9 8 -7 1 -66 9 10 20 30 40 50 60 70 80 90 100]))
+           (fmap-keeps-type pinc (gb factory 2 9 1 2 [1 2 3 4 5 6 100 0 -999 1 2 2 10 20 30 40 50 60 1000 0 -9990 10 20 20]))
+           (fmap-keeps-type p+ (gb factory 0 0) (ge factory 0 0)))))
+
 (defn test-sspar-mat-functor-laws [factory creator]
   (let [pinc (double-fn (partial + 1))
         p*100 (double-fn (partial * 100))
@@ -498,7 +509,7 @@
   (test-tr-seq factory)
   (test-vctr-functor-laws factory)
   (test-ge-functor-laws factory ge)
-  (test-ge-functor-laws factory gb)
+  (test-gb-functor-laws factory)
   (test-sspar-mat-functor-laws factory tr)
   (test-sspar-mat-functor-laws factory sy)
   (test-sspar-mat-functor-laws factory sb)

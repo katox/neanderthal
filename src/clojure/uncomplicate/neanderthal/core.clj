@@ -414,11 +414,14 @@
       (gb float-factory 4 3 1 2 (range 20) {:layout :row})
   "
   ([factory m n kl ku source options]
-   (if (and (or (= 0 kl m) (< -1 (long kl) (long m))) (or (= 0 ku n) (< -1 (long ku) (long n))))
+   (if (or (and (< 0 (long kl) (long m))
+                (< 0 (long ku) (long n))
+                (> (+ (long m) (long n)) 3))
+           (= (long m) (long n) (long kl) (long ku) 0))
      (let-release [res (api/create-gb (api/factory factory) m n kl ku
                                       (api/options-column? options) (not (:raw options)))]
        (if source (transfer! source res) res))
-     (dragan-says-ex "GB matrix cannot have a negative dimension nor overflow diagonals."
+     (dragan-says-ex "GB matrix cannot have a negative dimension, overflow or zero super-diagonals or sub-diagonals."
                      {:m m :n n :kl kl :ku ku})))
   ([factory m n kl ku arg]
    (if (or (not arg) (map? arg))
@@ -450,13 +453,15 @@
       (sb float-factory 4 2 (range 20) {:layout :row})
   "
   ([factory n k source options]
-   (if (or (< -1 (long k) (long n)) (= 0 k n))
+   (if (or (and (> (long n) 1) (< 0 (long k) (long n)))
+           (= (long n) (long k) 0))
      (let-release [res (api/create-sb (api/factory factory) n k (api/options-column? options)
                                       (api/options-lower? options) (not (:raw options)))]
        (if source
          (transfer! source res)
          res))
-     (dragan-says-ex "SB matrix cannot have a negative dimension nor overflow diagonals." {:n n :k k})))
+     (dragan-says-ex "SB matrix cannot have a negative dimension, overflow or zero super-diagonals or sub-diagonals."
+                     {:n n :k k})))
   ([factory n source arg]
    (let [[k src] (if (number? source) [source nil] [(max 0 (dec (long n))) source])]
      (if (or (not arg) (map? arg))

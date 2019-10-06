@@ -1123,7 +1123,7 @@
 (defn test-gb-alter! [factory]
   (facts "GB alter!."
          (entry (alter! (gb factory 5 3 1 2 (range 100) {:layout :row}) 1 1 val+) 1 1) => 5.0
-         (alter! (gb factory 4 4 0 3 (range 100)) val-ind+) => (gb factory 4 4 0 3 [0 1 3 6 10 14 18 24 30 36])
+         (alter! (gb factory 4 4 1 3 (range 100)) val-ind+) => (gb factory 4 4 1 3 [0 0 2 4 6 10 14 18 22 27 33 39 45])
          (alter! (gb factory 100 2 2 1 (range 1 300) {:layout :row}) val-ind+)
          => (gb factory 100 2 2 1 [0 2 0 5 0 8 10] {:layout :row})))
 
@@ -1141,7 +1141,7 @@
 (defn test-gb-nrm2 [factory]
   (facts "BLAS 1 GB nrm2."
          (nrm2 (gb factory 5 4 2 3 (repeat 1.0))) => (roughly (sqrt 17))
-         (nrm2 (gb factory 1 1 0 0 [])) => 0.0))
+         (nrm2 (gb factory 2 2 1 1 [])) => 0.0))
 
 (defn test-gb-amax [factory]
   (facts "BLAS 1 GB amax."
@@ -1417,7 +1417,7 @@
 (defn test-gd [factory]
   (facts "GD Matrix methods."
          (with-release [d (gd factory 4 (range 1 100))
-                        b (gb factory 4 4 0 0 (range 1 100))]
+                        b (gb factory 4 4 2 1 [1 100 200 300 2 400 500 600 3 700 800 4])]
            (dia d -2) => (vctr factory 0)
            (dia d) => (dia b)
            (trans (trans d)) => d)))
@@ -1426,7 +1426,7 @@
   (facts "BLAS 1 copy! GD matrix"
          (with-release [a (gd factory 5 (range 1 20))
                         a1 (gd factory 5)
-                        b (gb factory 5 5 0 0 (range 100 200))]
+                        b (gb factory 5 5 1 1 [100 -1 1 101 -1 1 102 -1 1 103 -1 1 104 -1 1 105])]
            (identical? (copy! a a1) a1) => true
            (identical? (copy! a b) b) => (throws ExceptionInfo)
            (copy! a a1) => (gd factory 5 (range 1 20))
@@ -1488,7 +1488,7 @@
 
          (with-release [c (ge factory 6 2 (range 1 13))]
            (mm! 2.0 (gd factory 6 [1 2 3 4 5 6]) (ge factory 6 2 (range 100)) 3.0 c)
-           => (mm! 2.0 (sb factory 6 0 [1 2 3 4 5 6]) (ge factory 6 2 (range 100)) 3.0 c))))
+           => (mm! 2.0 (sb factory 6 1 [1 0 2 0 3 0 4 0 5 0 6]) (ge factory 6 2 (range 100)) 3.0 c))))
 
 (defn test-gd-entry! [factory]
   (facts "GD matrix entry!."
@@ -1505,9 +1505,9 @@
 (defn test-gd-dot [factory]
   (facts "BLAS 1 GD dot"
          (with-release [a (gd factory 5 (range -10 100))
-                        a1 (gb factory 5 5 0 0 (range -10 100))
+                        a1 (gb factory 5 5 1 1 [-10 0 0 -9 0 0 -8 0 0 -7 0 0 -6])
                         b (gd factory 5 (range 1 100))
-                        b1 (gb factory 5 5 0 0 (range 1 100))
+                        b1 (gb factory 5 5 1 1 [1 0 0 2 0 0 3 0 0 4 0 0 5])
                         d (gd factory 5)
                         zero-point (gd factory 5)]
            (sqrt (dot a a)) => (roughly (nrm2 a) 0.000001)
@@ -1517,22 +1517,22 @@
 
 (defn test-gd-nrm2 [factory]
   (facts "BLAS 1 GD nrm2."
-         (nrm2 (gd factory 5 (repeat 1.0))) => (nrm2 (gb factory 5 5 0 0 (repeat 1.0)))
+         (nrm2 (gd factory 5 (repeat 1.0))) => (nrm2 (gb factory 5 5 1 1 [1 0 0 1 0 0 1 0 0 1 0 0 1]))
          (nrm2 (gd factory 1 [])) => 0.0))
 
 (defn test-gd-amax [factory]
   (facts "BLAS 1 GD amax."
-         (amax (gd factory 5 (range 1 100))) => (amax (gb factory 5 5 0 0 (range 1 100)))
+         (amax (gd factory 5 (range 1 100))) => (amax (gb factory 5 5 1 1 [1 0 0 2 0 0 3 0 0 4 0 0 5]))
          (amax (gd factory 0 [])) => 0.0))
 
 (defn test-gd-asum [factory]
   (facts "BLAS 1 GD asum."
-         (asum (gd factory 5 (range 1 100))) => (asum (gb factory 5 5 0 0 (range 1 100)))
+         (asum (gd factory 5 (range 1 100))) => (asum (gb factory 5 5 1 1 [1 0 0 2 0 0 3 0 0 4 0 0 5]))
          (asum (gd factory 0 [])) => 0.0))
 
 (defn test-gd-sum [factory]
   (facts "BLAS 1 GD sum."
-         (sum (gd factory 5 (range 1 100))) => (sum (gb factory 5 5 0 0 (range 1 100)))))
+         (sum (gd factory 5 (range 1 100))) => (sum (gb factory 5 5 1 1 [1 0 0 2 0 0 3 0 0 4 0 0 5]))))
 
 (defn test-gt-constructor [factory gt]
   (facts "Create a GT matrix."
@@ -1805,10 +1805,12 @@
 (defn test-gb-srt [factory]
   (facts
    "LAPACK GB srt!"
-   (with-release [a0 (gb factory 2 2 0 0)
+   (with-release [az (gb factory 0 0 0 0)
+                  a0 (gb factory 2 2 1 1)
                   a1 (gb factory 2 3 1 1 [3 0 -1 1 2])
                   a2 (gb factory 2 3 1 1 [0 3 -1 1 2])
                   a3 (gb factory 2 3 1 1 [3 0 1 -1 2])]
+     (sort+! az) => az
      (sort+! a0) => a0
      (sort+! a1) => a2
      (sort-! a1) => a3)))
