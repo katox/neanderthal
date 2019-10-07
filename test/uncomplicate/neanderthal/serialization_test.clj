@@ -25,26 +25,16 @@
 (def gen-size (gen/frequency [[1 (gen/return 0)]
                               [90 (gen/large-integer* {:min 1 :max 100})]
                               [9 (gen/large-integer* {:min 101 :max MAX-SIZE})]]))
-(def gen-band (gen/such-that
-                (fn [[^long m ^long n ^long kl ^long ku]]
-                  (or (= m n kl ku 0)
-                      (and (>= m 2) (>= n 2) (> kl 0) (> ku 0))))
-                (gen/bind (gen/tuple gen-size gen-size)
-                          (fn [[^long m ^long n]]
-                            (gen/tuple (gen/return m)
-                                       (gen/return n)
-                                       (gen/large-integer* {:min 0 :max (max 0 (dec m))})
-                                       (gen/large-integer* {:min 0 :max (max 0 (dec n))}))))
-                {:max-tries 100}))
-(def gen-sym-band (gen/such-that
-                    (fn [[^long n ^long k]]
-                      (or (= n k 0)
-                          (and (>= n 2) (> k 0))))
-                    (gen/bind gen-size
-                              (fn [^long n]
-                                (gen/tuple (gen/return n)
-                                           (gen/large-integer* {:min 0 :max (max 0 (dec n))}))))
-                    {:max-tries 100}))
+(def gen-band (gen/bind (gen/tuple gen-size gen-size)
+                        (fn [[^long m ^long n]]
+                          (gen/tuple (gen/return m)
+                                     (gen/return n)
+                                     (gen/large-integer* {:min 0 :max (max 0 (dec m))})
+                                     (gen/large-integer* {:min 0 :max (max 0 (dec n))})))))
+(def gen-sym-band (gen/bind gen-size
+                            (fn [^long n]
+                              (gen/tuple (gen/return n)
+                                         (gen/large-integer* {:min 0 :max (max 0 (dec n))})))))
 
 (def gen-layout (gen/elements [:column :row]))
 (def gen-uplo (gen/elements [:upper :lower]))
