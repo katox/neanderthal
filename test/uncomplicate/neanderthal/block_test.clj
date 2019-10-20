@@ -465,6 +465,40 @@
                  y (vctr factory (range 16))]
     (view (buffer x)) => y))
 
+(defn test-ge-zero-dim [factory]
+  (with-release [vctr-source (vctr factory (range 1 1001))
+                 zge (ge factory 0 0)
+                 tge (submatrix (ge factory 5 6 vctr-source {:layout :column}) 0 0)
+                 zge2 (ge factory 5 0)
+                 tge2 (submatrix (ge factory 5 6 vctr-source {:layout :column}) 5 0)]
+    (facts
+      (= zge tge) => true
+      (= true (contiguous? zge) (contiguous? tge)) => true
+      (= (contiguous? (view-vctr zge)) (contiguous? (view-vctr tge))) => true
+      (= zge2 tge2) => true
+      (= true (contiguous? zge2) (contiguous? tge2)) => true
+      (= (contiguous? (view-vctr zge2)) (contiguous? (view-vctr tge2))) => true)))
+
+(defn test-gb-sb-tb-zero-dim [factory]
+  (with-release [vctr-source (vctr factory (range 1 1001))
+                 zgb (gb factory 0 0 0 0)
+                 tgb (submatrix (gb factory 5 6 0 0 vctr-source {:layout :column}) 0 0)
+                 zgb2 (gb factory 5 0 0 0)
+                 tgb2 (submatrix (gb factory 5 6 0 0 vctr-source {:layout :column}) 5 0)
+                 zgb3 (gb factory 2 0 1 0)
+                 tgb3 (submatrix (gb factory 2 0 1 0) 0 0 0 0)]
+    (facts
+      (= zgb tgb) => true
+      (= true (contiguous? zgb) (contiguous? tgb)) => true
+      (= (contiguous? (view-vctr zgb)) (contiguous? (view-vctr tgb))) => true
+      (= zgb2 tgb2) => true
+      (= true (contiguous? zgb2) (contiguous? tgb2)) => true
+      (= (contiguous? (view-vctr zgb2)) (contiguous? (view-vctr tgb2))) => true
+      (= zgb tgb3) => true
+      (= true (contiguous? zgb3) (contiguous? tgb3)) => true
+      (= (contiguous? (view-vctr zgb3)) (contiguous? (view-vctr tgb3))) => true)))
+
+
 (defn test-all [factory]
   (test-create factory)
   (test-equality factory)
@@ -473,7 +507,9 @@
   (test-ge-op factory)
   (test-vctr-contiguous factory)
   (test-ge-contiguous factory)
-  (test-uplo-contiguous factory tr))
+  (test-uplo-contiguous factory tr)
+  (test-ge-zero-dim factory)
+  (test-gb-sb-tb-zero-dim factory))
 
 (defn test-both-factories [factory0 factory1]
   (test-vctr-transfer factory0 factory1)

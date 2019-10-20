@@ -2846,6 +2846,42 @@
         (nrm2 (axpy! -1 u-res u)) => (roughly 0.01586)
         (nrm2 (axpy! -1 vt-res vt)) => (roughly 0.012377)))))
 
+;; -------------------- Edge case matrix tests -----------------------------
+
+(defn test-gb-sb-tb-submatrix [factory]
+  (with-release [vctr-source (vctr factory [10 1 1 20 1 1 30 1 1 40 1 1 50 1 1 60 1 1 70 1 1 80 1 1 90 1 1 ])
+                 sgb (gb factory 4 4 1 1 vctr-source)
+                 tgb (submatrix sgb 0 0 4 4)
+                 tgb2 (submatrix (gb factory 5 5 1 1 vctr-source {:layout :column}) 0 0 4 4)
+                 ssb (sb factory 4 1 vctr-source)
+                 tsb (submatrix ssb 4 4)
+                 stb (tb factory 4 1 vctr-source)
+                 ttb (submatrix stb 4 4)]
+    (facts
+      (= sgb tgb) => true
+      (= sgb tgb2) => true
+      (= ssb tsb) => true
+      (= stb ttb) => true)))
+
+(defn test-gb-sb-tb-print [factory]
+  (with-release [vctr-source (vctr factory (range 1 1001))
+                 sgb (gb factory 4 4 1 1 vctr-source)
+                 tgb (submatrix sgb 0 0 4 4)
+                 tgb2 (submatrix (gb factory 5 5 1 1 vctr-source {:layout :column}) 4 4)
+                 ssb (sb factory 4 1 vctr-source)
+                 tsb (submatrix ssb 4 4)
+                 stb (tb factory 4 1 vctr-source)
+                 ttb (submatrix stb 4 4)]
+    (facts
+      (= (with-out-str (pr sgb))
+         (with-out-str (pr tgb))) => true
+      (= (with-out-str (pr sgb))
+         (with-out-str (pr tgb2))) => true
+      (= (with-out-str (pr ssb))
+         (with-out-str (pr tsb))) => true
+      (= (with-out-str (pr stb))
+         (with-out-str (pr ttb))) => true)))
+
 ;; =========================================================================
 
 (defn test-blas [factory]
@@ -3184,3 +3220,7 @@
   (test-st-asum factory)
   (test-st-sum factory)
   (test-st-amax factory))
+
+(defn test-matrix-edge-cases [factory]
+  (test-gb-sb-tb-submatrix factory)
+  (test-gb-sb-tb-print factory))

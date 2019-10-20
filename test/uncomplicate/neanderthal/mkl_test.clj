@@ -93,6 +93,9 @@
 (real-test/test-blas-st-host mkl-double)
 (real-test/test-blas-st-host mkl-float)
 
+(real-test/test-matrix-edge-cases mkl-float)
+(real-test/test-matrix-edge-cases mkl-double)
+
 (math-test/test-all-host mkl-double)
 (math-test/test-all-host mkl-float)
 
