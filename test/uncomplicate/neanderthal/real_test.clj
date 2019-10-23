@@ -2882,6 +2882,65 @@
       (= (with-out-str (pr stb))
          (with-out-str (pr ttb))) => true)))
 
+(defn test-stable-band-region [factory]
+  (with-release [tr-a3 (tr factory 3 (range 1 7) {:layout :column, :uplo :upper, :diag :unit})
+                 tr-b3 (submatrix tr-a3 3 3)
+                 tr-a1 (tr factory 1 (range 1 7) {:layout :column, :uplo :upper, :diag :unit})
+                 tr-b1 (submatrix tr-a1 1 1)
+                 tr-a0 (tr factory 0 nil {:layout :column, :uplo :upper, :diag :unit})
+                 tr-b0 (submatrix tr-a0 0 0)]
+    (facts "TR matrix and its full submatrix should equal."
+      (= tr-a3 tr-b3)
+      (= tr-a1 tr-b1)
+      (= tr-a0 tr-b0)))
+
+  (with-release [sy-a3 (sy factory 3 (range 1 7) {:layout :column, :uplo :upper, :diag :unit})
+                 sy-b3 (submatrix sy-a3 3 3)
+                 sy-a1 (sy factory 1 (range 1 7) {:layout :column, :uplo :upper, :diag :unit})
+                 sy-b1 (submatrix sy-a1 1 1)
+                 sy-a0 (sy factory 0 nil {:layout :column, :uplo :upper, :diag :unit})
+                 sy-b0 (submatrix sy-a0 0 0)]
+    (facts "SY matrix and its full submatrix should equal."
+           (= sy-a3 sy-b3)
+           (= sy-a1 sy-b1)
+           (= sy-a0 sy-b0)))
+
+  (with-release [sb-a3 (sb factory 3 1 (range 1 7) {:layout :row, :uplo :upper, :diag :unit})
+                 sb-b3 (submatrix sb-a3 3 3)
+                 sb-a1 (sb factory 1 0 (range 1 7) {:layout :row, :uplo :upper, :diag :unit})
+                 sb-b1 (submatrix sb-a1 1 1)
+                 sb-a0 (sb factory 0 0 nil {:layout :row, :uplo :upper, :diag :unit})
+                 sb-b0 (submatrix sb-a0 0 0)]
+    (facts "SB matrix and its full submatrix should equal."
+           (= sb-a3 sb-b3)
+           (= sb-a1 sb-b1)
+           (= sb-a0 sb-b0)))
+
+  (with-release [tb-a3 (tb factory 3 1 (range 1 7) {:layout :row, :uplo :upper, :diag :unit})
+                   tb-b3 (submatrix tb-a3 3 3)
+                   tb-a1 (tb factory 1 0 (range 1 7) {:layout :row, :uplo :upper, :diag :unit})
+                   tb-b1 (submatrix tb-a1 1 1)
+                   tb-a0 (tb factory 0 0 nil {:layout :row, :uplo :upper, :diag :unit})
+                   tb-b0 (submatrix tb-a1 0 0)]
+      (facts "TB matrix and its full submatrix should equal."
+             (= tb-a3 tb-b3)
+             (= tb-a1 tb-b1)
+             (= tb-a0 tb-b0)))
+
+  (with-release [gb-a43 (gb factory 4 3 1 2 (range 1 13) {:layout :column, :uplo :upper, :diag :unit})
+                 gb-b43 (submatrix gb-a43 4 3)
+                 gb-a2 (gb factory 2 2 1 0 (range 1 7) {:layout :column, :uplo :upper, :diag :unit})
+                 gb-b2 (submatrix gb-a2 2 2)
+                 gb-a1 (gb factory 1 1 0 0 (range 1 7) {:layout :column, :uplo :upper, :diag :unit})
+                 gb-b1 (submatrix gb-a1 1 1)
+                 gb-a0 (gb factory 0 0 0 0 nil {:layout :column, :uplo :upper, :diag :unit})
+                 gb-b0 (submatrix gb-a0 0 0)]
+    (facts "GB matrix and its full submatrix should equal."
+           (= gb-a43 gb-b43)
+           (= gb-a2 gb-b2)
+           (= gb-a1 gb-b1)
+           (= gb-a0 gb-b0))))
+
 ;; =========================================================================
 
 (defn test-blas [factory]
@@ -3223,4 +3282,5 @@
 
 (defn test-matrix-edge-cases [factory]
   (test-gb-sb-tb-submatrix factory)
-  (test-gb-sb-tb-print factory))
+  (test-gb-sb-tb-print factory)
+  (test-stable-band-region factory))
